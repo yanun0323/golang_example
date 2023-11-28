@@ -1,6 +1,9 @@
 package game
 
-import "errors"
+import (
+	"errors"
+	"math/rand"
+)
 
 // InitTable
 func InitTable(max, group int) ([]int, error) {
@@ -21,12 +24,23 @@ func InitTable(max, group int) ([]int, error) {
 	return cards, nil
 }
 
-// Draw
-func Draw() {
+// Draw: Draw a card from table
+// 如果抽到的牌是-1 代表已經抽過了, 回傳-1
+func Draw(cards []int) int {
+	//產生一個範圍內整數隨機數
+	r := rand.Intn(len(cards))
+	cardDraw := cards[r]
 
+	if cardDraw == -1 {
+		return -1
+	}
+	cards[r] = -1
+	return cardDraw
 }
 
 // Compare
 func Compare() {
+	//比較牌的點數大小
+	//用maxWithLimitation
 
 }
