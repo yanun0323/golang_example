@@ -1,58 +1,101 @@
 package internal
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMaxWithLimit(t *testing.T) {
 	testCase := []struct {
 		name     string
-		a, b     int
-		expected int
+		a, b     []int
+		expected []int
 		isError  bool
 	}{
 		{
 			name:     "a 比較大",
-			a:        5,
-			b:        4,
-			expected: 5,
+			a:        []int{5, 0},
+			b:        []int{4, 1},
+			expected: []int{5, 0},
 		},
 		{
 			name:     "b 比較大",
-			a:        5,
-			b:        6,
-			expected: 6,
+			a:        []int{5, 3},
+			b:        []int{6, 1},
+			expected: []int{6, 1},
 		},
 		{
-			name:     "a 超過",
-			a:        55,
-			b:        6,
-			expected: -1,
+			name:     "a 比較大(花色)",
+			a:        []int{6, 3},
+			b:        []int{6, 1},
+			expected: []int{6, 3},
+		},
+		{
+			name:     "b 比較大(花色)",
+			a:        []int{6, 0},
+			b:        []int{6, 1},
+			expected: []int{6, 1},
+		},
+		{
+			name:     "a 數字超過",
+			a:        []int{14, 1},
+			b:        []int{6, 1},
+			expected: nil,
 			isError:  true,
 		},
 		{
-			name:     "b 超過",
-			a:        6,
-			b:        55,
-			expected: -1,
+			name:     "b 數字超過",
+			a:        []int{1, 1},
+			b:        []int{14, 1},
+			expected: nil,
 			isError:  true,
 		},
 		{
-			name:     "a < 0",
-			a:        -1,
-			b:        2,
-			expected: -1,
+			name:     "a <= 0",
+			a:        []int{0, 2},
+			b:        []int{3, 1},
+			expected: nil,
 			isError:  true,
 		},
 		{
-			name:     "b <0",
-			a:        2,
-			b:        -1,
-			expected: -1,
+			name:     "b <= 0",
+			a:        []int{10, 2},
+			b:        []int{-1, 1},
+			expected: nil,
+			isError:  true,
+		},
+		{
+			name:     "a 花色<0",
+			a:        []int{1, -2},
+			b:        []int{3, 1},
+			expected: nil,
+			isError:  true,
+		},
+		{
+			name:     "b 花色<0",
+			a:        []int{1, 2},
+			b:        []int{3, -1},
+			expected: nil,
+			isError:  true,
+		},
+		{
+			name:     "a 花色超過",
+			a:        []int{1, 4},
+			b:        []int{3, 1},
+			expected: nil,
+			isError:  true,
+		},
+		{
+			name:     "b 花色超過",
+			a:        []int{1, 2},
+			b:        []int{3, 5},
+			expected: nil,
 			isError:  true,
 		},
 	}
 
 	for _, tc := range testCase {
 		t.Log(tc.name)
+
 		result, err := MaxWithLimitation(tc.a, tc.b)
 		if tc.isError {
 			if err == nil {
@@ -65,8 +108,19 @@ func TestMaxWithLimit(t *testing.T) {
 			}
 		}
 
-		if result != tc.expected {
-			t.Fatalf("result is not %d", tc.expected)
+		if len(result) != len(tc.expected) {
+			t.Fatalf("result is not equal to expected")
 		}
+
+		if (result == nil) != (tc.expected == nil) {
+			t.Fatalf("result is not equal to expected")
+		}
+
+		for i, v := range result {
+			if v != tc.expected[i] {
+				t.Fatalf("result is not equal to expected")
+			}
+		}
+
 	}
 }

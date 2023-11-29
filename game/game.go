@@ -19,7 +19,7 @@ func InitTable(max, group int) ([]int, error) {
 	cards := make([]int, 0, max*group)
 	for i := 0; i < group; i++ {
 		for j := 0; j < max; j++ {
-			cards = append(cards, j+1)
+			cards = append(cards, j)
 		}
 	}
 	return cards, nil
@@ -27,7 +27,7 @@ func InitTable(max, group int) ([]int, error) {
 
 // Draw: Draw a card from table
 // table: 牌靴, playerCnt: 玩家數量
-func Draw(table []int, playerCnt int) ([]int, error) {
+func Draw(table []int, playerCnt int) ([][]int, error) {
 
 	if len(table) < playerCnt {
 		return nil, errors.New("table is not enough")
@@ -38,14 +38,18 @@ func Draw(table []int, playerCnt int) ([]int, error) {
 	}
 
 	//num:存放抽到的牌
-	playerNum := make([]int, 0, playerCnt)
+	playerNum := make([][]int, 0, playerCnt)
 
 	for len(playerNum) < playerCnt {
 		r := rand.Intn(len(table))
 		if table[r] == -1 { //處理重複抽
 			continue
 		}
-		playerNum = append(playerNum, table[r])
+
+		num := table[r]%13 + 1
+		suit := table[r] / 13
+
+		playerNum = append(playerNum, []int{num, suit})
 		table[r] = -1
 	}
 
@@ -57,20 +61,20 @@ func Draw(table []int, playerCnt int) ([]int, error) {
 }
 
 // Compare: 比大小 傳回最大值 有錯傳回-1及錯誤資訊
-func Compare(cards []int) (int, error) {
+func Compare(cards [][]int) ([]int, error) {
 	if len(cards) <= 0 {
-		return -1, errors.New("cards should greater than 0")
+		return nil, errors.New("cards should greater than 0")
 	}
 
-	max := 0
+	max := cards[0]
 	for i := 0; i < len(cards); i++ {
 		tempMax, err := internal.MaxWithLimitation(max, cards[i])
 		if err == nil {
-			if tempMax != -1 {
+			if tempMax[0] != -1 && tempMax[1] != -1 {
 				max = tempMax
 			}
 		} else {
-			return -1, err
+			return nil, err
 		}
 	}
 

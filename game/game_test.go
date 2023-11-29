@@ -81,15 +81,14 @@ func TestCompare(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		cards    []int
-		expected int
+		cards    [][]int
+		expected []int
 		err      bool
 	}{
-		{"good", []int{1, 2, 3}, 3, false},
-		{"good", []int{2, 2, 3, 3}, 3, false},
-		{"good", []int{1, 2, 4, 4}, 4, false},
-		{"good", []int{2, 2, 2, 2, 2}, 2, false},
-		{"cards <= 0", nil, -1, true},
+		{"good", [][]int{{1, 0}, {2, 3}, {3, 1}}, []int{3, 1}, false},
+		{"good", [][]int{{1, 0}, {2, 3}, {2, 1}}, []int{2, 3}, false},
+		{"good", [][]int{{1, 0}, {2, 1}, {2, 1}}, []int{2, 1}, false},
+		{"card <= 0", nil, nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -104,10 +103,20 @@ func TestCompare(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if com != tt.expected {
+			if len(com) != len(tt.expected) {
 				t.Fatalf("mismatch: %d, %d", com, tt.expected)
-
 			}
+
+			if (com == nil) != (tt.expected == nil) {
+				t.Fatalf("mismatch: %d, %d", com, tt.expected)
+			}
+
+			for i, v := range com {
+				if v != tt.expected[i] {
+					t.Fatalf("mismatch: %d, %d", com, tt.expected)
+				}
+			}
+
 		})
 	}
 }
