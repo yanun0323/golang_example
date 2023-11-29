@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"main/internal"
 	"math/rand"
 )
 
@@ -25,22 +26,53 @@ func InitTable(max, group int) ([]int, error) {
 }
 
 // Draw: Draw a card from table
-// 如果抽到的牌是-1 代表已經抽過了, 回傳-1
-func Draw(cards []int) int {
-	//產生一個範圍內整數隨機數
-	r := rand.Intn(len(cards))
-	cardDraw := cards[r]
+// table: 牌靴, playerCnt: 玩家數量
+func Draw(table []int, playerCnt int) ([]int, error) {
 
-	if cardDraw == -1 {
-		return -1
+	if len(table) < playerCnt {
+		return nil, errors.New("table is not enough")
 	}
-	cards[r] = -1
-	return cardDraw
+
+	if playerCnt <= 0 {
+		return nil, errors.New("playerCnt should greater than 0")
+	}
+
+	//num:存放抽到的牌
+	playerNum := make([]int, 0, playerCnt)
+
+	for len(playerNum) < playerCnt {
+		r := rand.Intn(len(table))
+		if table[r] == -1 { //處理重複抽
+			continue
+		}
+		playerNum = append(playerNum, table[r])
+		table[r] = -1
+	}
+
+	if len(playerNum) != playerCnt {
+		return nil, errors.New("card num is not match")
+	}
+
+	return playerNum, nil
 }
 
-// Compare
-func Compare() {
-	//比較牌的點數大小
-	//用maxWithLimitation
+// Compare: 比大小 傳回最大值 有錯傳回-1及錯誤資訊
+func Compare(cards []int) (int, error) {
+	if len(cards) <= 0 {
+		return -1, errors.New("cards should greater than 0")
+	}
 
+	max := 0
+	for i := 0; i < len(cards); i++ {
+		tempMax, err := internal.MaxWithLimitation(max, cards[i])
+		if err == nil {
+			if tempMax != -1 {
+				max = tempMax
+			}
+		} else {
+			return -1, err
+		}
+	}
+
+	return max, nil
 }

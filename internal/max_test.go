@@ -53,7 +53,7 @@ func TestMaxWithLimit(t *testing.T) {
 
 	for _, tc := range testCase {
 		t.Log(tc.name)
-		result, err := maxWithLimitation(tc.a, tc.b)
+		result, err := MaxWithLimitation(tc.a, tc.b)
 		if tc.isError {
 			if err == nil {
 				t.Fatal("it should be error")
