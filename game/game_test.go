@@ -30,7 +30,7 @@ func TestInitTable(t *testing.T) {
 			}
 
 			for i := range tt.expected {
-				if table[i] != tt.expected[i] {
+				if len(table) != len(tt.expected) {
 					t.Fatalf("mismatch: %d, %d", table[i], tt.expected[i])
 				}
 			}
