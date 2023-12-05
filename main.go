@@ -9,9 +9,11 @@ var (
 	//張數
 	max = 52
 	//牌組數
-	group = 2
+	group = 1
 	//玩家數量
-	playerCnt = 3
+	playerCnt = 2
+	//玩家牌數
+	cardCnt = 3
 )
 
 func main() {
@@ -22,7 +24,7 @@ func main() {
 		return
 	}
 
-	drawed, err1 := game.Draw(table, playerCnt)
+	drawed, err1 := game.Draw(table, cardCnt)
 	if err1 != nil {
 		fmt.Println(err1)
 		return

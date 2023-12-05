@@ -26,21 +26,22 @@ func InitTable(max, group int) ([]int, error) {
 }
 
 // Draw: Draw a card from table
-// table: 牌靴, playerCnt: 玩家數量
-func Draw(table []int, playerCnt int) ([][]int, error) {
+// table: 牌靴, cardsPerP: 每個玩家的牌數
+// 回傳: 每個玩家的牌{點數, 花色}, error
+func Draw(table []int, cardsPerP int) ([][]int, error) {
 
-	if len(table) < playerCnt {
+	if len(table) < cardsPerP {
 		return nil, errors.New("table is not enough")
 	}
 
-	if playerCnt <= 0 {
-		return nil, errors.New("playerCnt should greater than 0")
+	if cardsPerP <= 0 {
+		return nil, errors.New("cardsPerP should greater than 0")
 	}
 
 	//num:存放抽到的牌
-	playerNum := make([][]int, 0, playerCnt)
+	playerCard := make([][]int, 0, cardsPerP)
 
-	for len(playerNum) < playerCnt {
+	for len(playerCard) < cardsPerP {
 		r := rand.Intn(len(table))
 		if table[r] == -1 { //處理重複抽
 			continue
@@ -49,21 +50,52 @@ func Draw(table []int, playerCnt int) ([][]int, error) {
 		num := table[r]%13 + 1
 		suit := table[r] / 13
 
-		playerNum = append(playerNum, []int{num, suit})
+		playerCard = append(playerCard, []int{num, suit})
 		table[r] = -1
 	}
 
-	if len(playerNum) != playerCnt {
+	if len(playerCard) != cardsPerP {
 		return nil, errors.New("card num is not match")
 	}
 
-	return playerNum, nil
+	return playerCard, nil
 }
 
 // Compare: 比大小 傳回最大值 有錯傳回-1及錯誤資訊
-func Compare(cards [][]int) ([]int, error) {
-	if len(cards) <= 0 {
-		return nil, errors.New("cards should greater than 0")
+func Compare(p1, p2 [][]int) ([][]int, error) {
+	if len(p1) <= 0 {
+		return nil, errors.New("p1 cards should greater than 0")
+	}
+
+	if len(p2) <= 0 {
+		return nil, errors.New("p2 cards should greater than 0")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	internal.MaxWithLimitation(scoreSumP1, scoreSumP2)
+
+	if scoreSumP1 > scoreSumP2 {
+		return p1, nil
+	} else if scoreSumP1 < scoreSumP2 {
+		return p2, nil
+	}
+
+	suitSumP1, err := internal.SumSuit(p1)
+	suitSumP2, err := internal.SumSuit(p2)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if suitSumP1 > suitSumP2 {
+		return p1, nil
+	} else if suitSumP1 < suitSumP2 {
+		return p2, nil
+	} else {
+		return [][]int{-1, -1}, nil
 	}
 
 	max := cards[0]

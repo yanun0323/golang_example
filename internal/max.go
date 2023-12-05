@@ -2,56 +2,69 @@ package internal
 
 import "errors"
 
-// maxWithLimitation 比大小，如果一樣大回傳 {-1,-1}
-func MaxWithLimitation(a, b []int) ([]int, error) {
-	if a[0] > 13 {
-		return nil, errors.New("a > 13")
+// maxWithLimitation 比大小，如果一樣大回傳 {{0, 0}, nil}
+func MaxWithLimitation(a, b [][]int) ([][]int, error) {
+
+	sumScoreA, errA := SumScore(a)
+
+	if errA != nil {
+		return nil, errA
 	}
 
-	if b[0] > 13 {
-		return nil, errors.New("b > 13")
+	sumScoreB, errB := SumScore(b)
+
+	if errB != nil {
+		return nil, errB
 	}
 
-	if a[0] <= 0 {
-		return nil, errors.New("a <= 0")
+	for V := range a {
+		if a[V][0] < 1 || a[V][0] > 13 {
+			return nil, errors.New("a < 1 || a > 13")
+		}
 	}
 
-	if b[0] <= 0 {
-		return nil, errors.New("b <= 0")
+	for V := range b {
+		if b[V][0] < 1 || b[V][0] > 13 {
+			return nil, errors.New("b < 1 || b > 13")
+		}
 	}
 
-	if a[1] < 0 {
-		return nil, errors.New("a[1] < 0")
-	}
-
-	if b[1] < 0 {
-		return nil, errors.New("b[1] < 0")
-	}
-
-	if a[1] > 3 {
-		return nil, errors.New("a[1] > 3")
-	}
-
-	if b[1] > 3 {
-		return nil, errors.New("b[1] > 3")
-	}
-
-	if a[0] > b[0] {
+	if sumScoreA > sumScoreB {
 		return a, nil
+	} else if sumScoreA < sumScoreB {
+		return b, nil
 	}
 
-	if a[0] == b[0] { //比較花色
-		if a[1] > b[1] {
-			return a, nil
-		}
+	sumSuitA, errSA := SumSuit(a)
 
-		if a[1] < b[1] {
-			return b, nil
-		}
-
-		return []int{-1, -1}, nil
+	if errSA != nil {
+		return nil, errSA
 	}
 
-	return b, nil
+	sumSuitB, errSB := SumSuit(b)
+
+	if errSB != nil {
+		return nil, errSB
+	}
+
+	for V := range a {
+		if a[V][1] < 0 || a[V][1] > 3 {
+			return nil, errors.New("a < 0 || a > 3")
+		}
+	}
+
+	for V := range b {
+		if b[V][1] < 0 || b[V][1] > 3 {
+			return nil, errors.New("b < 0 || b > 3")
+		}
+	}
+
+	if sumSuitA > sumSuitB {
+		return a, nil
+	} else if sumSuitA < sumSuitB {
+		return b, nil
+	}
+
+	return [][]int{{0, 0}, nil}, nil
 
 }
