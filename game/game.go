@@ -2,7 +2,7 @@ package game
 
 import (
 	"errors"
-	"main/internal"
+	"main/game/algorithm"
 	"math/rand"
 )
 
@@ -61,22 +61,25 @@ func Draw(table []int, playerCnt int) ([][]int, error) {
 }
 
 // Compare: 比大小 傳回最大值 有錯傳回-1及錯誤資訊
-func Compare(cards [][]int) ([]int, error) {
-	if len(cards) <= 0 {
-		return nil, errors.New("cards should greater than 0")
-	}
+func Compare(alg algorithm.Algorithm) ([]int, error) {
+	return alg.CalculateAndGetWinner()
 
-	max := cards[0]
-	for i := 0; i < len(cards); i++ {
-		tempMax, err := internal.MaxWithLimitation(max, cards[i])
-		if err == nil {
-			if tempMax[0] != -1 && tempMax[1] != -1 {
-				max = tempMax
-			}
-		} else {
-			return nil, err
+}
+
+// DrawCard 抽牌示範
+func DrawCard(count int) []int {
+	cards := []int{}
+	p := 0
+	picked := map[int]bool{}
+	pick := make([]int, 0, count)
+	for i := 0; i < count; {
+		p = rand.Intn(52)
+		if picked[p] {
+			continue
 		}
+		pick = append(pick, cards[p])
+		picked[p] = true
+		i++
 	}
-
-	return max, nil
+	return pick
 }

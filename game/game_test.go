@@ -1,6 +1,12 @@
 package game
 
-import "testing"
+import (
+	"main/game/algorithm"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
 func TestInitTable(t *testing.T) {
 	tests := []struct {
@@ -25,14 +31,10 @@ func TestInitTable(t *testing.T) {
 				return
 			}
 
-			if err != nil {
-				t.Fatal("error")
-			}
+			require.NoError(t, err)
 
 			for i := range tt.expected {
-				if len(table) != len(tt.expected) {
-					t.Fatalf("mismatch: %d, %d", table[i], tt.expected[i])
-				}
+				assert.Equal(t, table[i], tt.expected[i])
 			}
 		})
 	}
@@ -92,7 +94,8 @@ func TestCompare(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			com, err := Compare(tt.cards)
+			alg := algorithm.NewStep2(tt.cards)
+			com, err := Compare(alg)
 			if tt.err {
 				if err == nil {
 					t.Fatal("nil error")

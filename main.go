@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"main/game"
+	"main/game/algorithm"
 )
 
 var (
@@ -29,12 +30,45 @@ func main() {
 	}
 	fmt.Println(drawed)
 
+	alg := algorithm.NewStep2(drawed)
+	_ = algorithm.NewStep1()
+
 	//比大小
-	max, err2 := game.Compare(drawed)
+	max, err2 := game.Compare(alg)
 	if err2 != nil {
 		fmt.Println(err2)
 		return
 	}
 	fmt.Println(max)
 
+}
+
+func CalExample() {
+	m := [][]byte{}
+
+	p := 0
+	b := 0
+
+	pBit := 0
+	p += drawCard()
+	b += drawCard()
+
+	for {
+		switch m[p][b] {
+		case 'H':
+			p += drawCard()
+		case 'S':
+			break
+		case 'D':
+			pBit *= 2
+			p += drawCard()
+		case 'L':
+			break
+		}
+	}
+
+}
+
+func drawCard() int {
+	return 1
 }
